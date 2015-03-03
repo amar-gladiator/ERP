@@ -28,4 +28,8 @@ config/secrets.yml
 # if using bower-rails ignore default bower_components path bower.json files
 /vendor/assets/bower_components
 *.bowerrc
+<<<<<<< HEAD
 bower.json
+=======
+bower.json
+>>>>>>> 2d6b11ec84515b9f185b11b74a90b383ba921081
