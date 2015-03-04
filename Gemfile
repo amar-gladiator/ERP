@@ -19,7 +19,6 @@ gem 'devise'
 gem 'cancan'
 gem 'pdfkit'
 gem 'wkhtmltopdf-binary'
-gem 'yard'
 # Use jquery as the JavaScript library
 gem 'jquery-rails'
 # Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
@@ -57,3 +56,4 @@ gem 'momentjs-rails', '>= 2.9.0'
 gem 'bootstrap3-datetimepicker-rails', '~> 4.0.0'
 gem 'jquery-validation-rails', '~> 1.13.1'
 gem 'yard'
+

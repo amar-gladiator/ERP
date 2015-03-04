@@ -1,3 +1,4 @@
+# Batch model
 class Batch < ActiveRecord::Base
   include Activity
   validates :name, presence: true, length: { minimum: 1, maximum: 20 }, format: { with: /\A[a-zA-Z0-9.\/_" "-]+\Z/ }
@@ -21,24 +22,31 @@ class Batch < ActiveRecord::Base
   has_many :student_informations
   scope :shod, ->(id) { where(id: id).take }
 
+  # Collect the subjects which are selected for exams.
   def exam
     subjects.where(no_exams: false)
   end
 
+  # This method for validates start date and end date
+  # if end date of current batch is less than start date
+  # then add and retuens errors
   def end_date_cannot_be_less_than_start_date
     if end_date.present? && end_date < start_date
       errors.add(:end_date, "can't be less than start date")
     end
   end
-
+ 
+  # method return course name, section name and batch name 
   def full_name
     [course.course_name, course.section_name, name].join(' ')
   end
 
+  # method return course code and batch name
   def batch_course_code
     [course.code, name].join(' ')
   end
 
+  # method return course name and batch name
   def batch_course_name
     [course.course_name, name].join(' ')
   end
@@ -48,6 +56,7 @@ class Batch < ActiveRecord::Base
     subjects.where(elective_group_id: nil)
   end
 
+  # find out weekdays for batch
   def has_own_weekday
     Weekday.where(batch_id: id).present?
   end
@@ -85,6 +94,8 @@ class Batch < ActiveRecord::Base
     end
   end
 
+  # This action find the exam groupes record who's result published
+  # status is true.
   def result_published
     exam_groups.where(result_published: true)
   end

@@ -1,3 +1,4 @@
+# FinanceFeeCategory model
 class FinanceFeeCategory < ActiveRecord::Base
   include Activity
   has_and_belongs_to_many :batches
@@ -9,6 +10,9 @@ class FinanceFeeCategory < ActiveRecord::Base
   validates :description, presence: true, length: { minimum: 1, maximum: 50 }
   scope :shod, ->(id) { where(id: id).take }
 
+  # This action is called by 'create_master_category' in
+  # finance controller. when master categoy is insert then
+  # batched fee category is also created.
   def fee_category(batches)
     return unless batches.present?
     batches.each do |b|
@@ -16,10 +20,14 @@ class FinanceFeeCategory < ActiveRecord::Base
     end
   end
 
+  # This action fetch the data from finance fee particular according
+  # to batch id.
   def particulars(batch_id)
     finance_fee_particulars.where(batch_id: batch_id)
   end
 
+  # This action fetch the data from finance fee discounts according
+  # to batch id.
   def discounts(batch_id)
     fee_discounts.where(batch_id: batch_id)
   end

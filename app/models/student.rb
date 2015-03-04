@@ -63,36 +63,51 @@ class Student < ActiveRecord::Base
   scope :shod, ->(id) { where(id: id).take }
   scope :list, -> { all + ArchivedStudent.all }
 
+  # return batch name by concating course name,batch name
+  # and section name
   def batch_name
     [batch.course.course_name, batch.course.section_name, batch.name].join(' ')
   end
 
+  # return student name by concating first name and last name
   def student_name
     [first_name, last_name].join(' ')
   end
 
+  # return student full name by concating
+  # first_name, middle_name, last_name
   def stud_full_name
     [first_name, middle_name, last_name].join(' ')
   end
 
+  # return address line by concating address_line1, address_line2
   def address_line
     [address_line1, address_line2].join(' ')
   end
 
+  # return address line by concating first_name,last_name,relation
   def guard_name(p)
     [p.first_name, p.last_name, p.relation].join(' ')
   end
 
+  # This method for create archived student,
+  # get all student attributes add  student id,
+  # call create method on ArchivedStudent and pass student attributes
+  # and create archived student
   def archived_student
     student_attributes = attributes
     student_attributes['student_id'] = id
     archived_student = ArchivedStudent.create(student_attributes)
   end
 
+  # return full name  by concating first_name,last_name
   def full_name
     [first_name, last_name].join(' ')
   end
 
+  # This action generate the unique student admission no for each student.
+  # Admission number is combination of admission date with prefix 'S' and
+  # admission count.
   def self.set_admission_no
     date = Date.today.strftime('%Y%m%d')
     if Student.first.nil?
@@ -103,6 +118,7 @@ class Student < ActiveRecord::Base
     end
   end
 
+  # This action is used to search the student record.
   def self.search(input, status)
     return if input.empty?
     if status.eql? 'present'
@@ -116,6 +132,9 @@ class Student < ActiveRecord::Base
     end
   end
 
+  # This action is used to search the student record on the advance basis.
+  # It search the record by name, category, batch, course, gender, blood
+  # group and so on.
   def self.advance_search(search, batch)
     conditions = ''
     conditions += "concat_ws(' ',first_name,last_name) \
@@ -194,6 +213,9 @@ class Student < ActiveRecord::Base
     end
   end
 
+  # Method for search student and return criteria for searching,
+  # when user search upon muitiple criteria thoes criteria return
+  # by search script and return script result
   def self.search_script(search, batch)
     script = ''
     script += ' Name: ' + search[:name].to_s + ', ' \
@@ -234,11 +256,14 @@ class Student < ActiveRecord::Base
     script
   end
 
+  # This method for send mail to user
   def mail(subject, recipient, message)
     user = User.discover(id, recipient).take
     UserMailer.student_email(user, subject, message).deliver
   end
 
+
+  # Fetch the record from student according to selected exam and student.
   def exam_scores(exam)
     ExamScore.where(exam_id: exam, student_id: id).take
   end

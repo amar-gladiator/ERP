@@ -1,3 +1,4 @@
+# FeeCollectionDiscountsStudent model
 class FeeCollectionDiscountsStudent < ActiveRecord::Base
   include Activity
   belongs_to :student

@@ -1,4 +1,4 @@
-# Guardian
+# Guardian model
 class Guardian < ActiveRecord::Base
   belongs_to :country
   belongs_to :student
@@ -24,10 +24,12 @@ class Guardian < ActiveRecord::Base
   scope :shod, ->(id) { where(id: id).take }
   scope :discover, ->(s, r) { where(student_id: s, relation: r).take }
 
+  # return full student name by joining first name and last name
   def student_name
     [first_name, last_name].join(' ')
   end
 
+  # This action create the user account for parent for selected student.
   def create_user_account
     user = User.new do |u|
       u.first_name = first_name

@@ -1,3 +1,4 @@
+# FeeCollectionParticular model
 class FeeCollectionParticular < ActiveRecord::Base
   include Activity
   belongs_to :finance_fee_collection
@@ -6,6 +7,9 @@ class FeeCollectionParticular < ActiveRecord::Base
   has_and_belongs_to_many :students
   scope :shod, ->(id) { where(id: id).take }
 
+  # This action generate the different collection for different student.
+  # e.g. collection is generating according to student admission number,
+  # student category and for whole student.
   def student_fee_collection
     students = []
     @batch = batch
@@ -28,6 +32,8 @@ class FeeCollectionParticular < ActiveRecord::Base
     end
   end
 
+  # Fetch the student number by admission number and return the
+  # student full name.
   def student_name
     student = Student.find_by_admission_no(admission_no)\
      if admission_no.present?

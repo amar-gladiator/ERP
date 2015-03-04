@@ -1,4 +1,4 @@
-# EmployeeLeaveType
+# EmployeeLeaveType model
 class EmployeeLeaveType < ActiveRecord::Base
   include Activity
   validates :name, presence: true, length: \
@@ -26,7 +26,8 @@ class EmployeeLeaveType < ActiveRecord::Base
       la.update(leave_count: l.max_leave_count)
     end
   end
-
+  
+  # find attendence by id
   def self.leave_type(att)
     find_by_id(att.employee_leave_type_id)
   end

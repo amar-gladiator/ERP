@@ -1,4 +1,4 @@
-# EmployeeAttendance
+# EmployeeAttendance model
 class EmployeeAttendance < ActiveRecord::Base
   include Activity
   belongs_to :employee
@@ -38,6 +38,8 @@ class EmployeeAttendance < ActiveRecord::Base
     end
   end
 
+  # method find and return leave count for perticular employee and
+  # employee leave type
   def report(emp, lt)
     lt.each do |l|
       leave_count = EmployeeAttendance.where(employee_id: emp.id, \

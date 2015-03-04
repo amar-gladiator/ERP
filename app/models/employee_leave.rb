@@ -1,4 +1,4 @@
-# EmployeeLeave
+# EmployeeLeave model
 class EmployeeLeave < ActiveRecord::Base
   include Activity
   belongs_to :employee_leave_type
@@ -9,6 +9,8 @@ class EmployeeLeave < ActiveRecord::Base
   # find employee from employee leave
   scope :leave_detail, ->(emp) { where(employee_id: emp.id) }
 
+  
+  # create leave for particular employee
   def self.leave(new_leave, e)
     create(employee_id: e.id, employee_leave_type_id: new_leave.id, \
            leave_count: new_leave.max_leave_count)

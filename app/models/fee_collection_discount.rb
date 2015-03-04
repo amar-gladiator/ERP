@@ -1,3 +1,4 @@
+# FeeColletionDiscount model
 class FeeCollectionDiscount < ActiveRecord::Base
   include Activity
   self.inheritance_column = nil
@@ -7,6 +8,9 @@ class FeeCollectionDiscount < ActiveRecord::Base
   has_and_belongs_to_many :students
   scope :shod, ->(id) { where(id: id).take }
 
+  # This action generate the different discount for different type.
+  # e.g. discount is generating according to student admission number,
+  # student category and for whole student.
   def student_fee_collection_discount
     students = []
     @batch = batch
@@ -27,10 +31,13 @@ class FeeCollectionDiscount < ActiveRecord::Base
     end
   end
 
+  # Calculating collection discount on user inputed total value.
   def collection_discount(total)
     (discount * total) / 100
   end
-
+ 
+  # Fetch the student number by admission number and return the
+  # student full name.
   def student_name
     student = Student.find_by_admission_no(admission_no)\
      if type == 'Student'

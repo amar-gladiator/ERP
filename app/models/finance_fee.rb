@@ -1,3 +1,4 @@
+# FinanceFee model
 class FinanceFee < ActiveRecord::Base
   include Activity
   belongs_to :finance_fee_collection
@@ -10,6 +11,8 @@ class FinanceFee < ActiveRecord::Base
     finance_fines.create(fine: fine, fine_date: date)
   end
 
+  # This action called from finance controller. this action save the record
+  # into the finance fee table when student pay fee.
   def create_transaction(amount, fine)
     student = self.student
     collection = finance_fee_collection
@@ -25,6 +28,8 @@ class FinanceFee < ActiveRecord::Base
     t.save
   end
 
+  # This action perform the addition operation on payment.
+  # Transaction amount is added into the payment
   def payment
     payment = 0
     transactions = finance_transactions

@@ -1,48 +1,57 @@
-# Exam Active Record
+# Exam model
 class Exam < ActiveRecord::Base
   include Activity
   belongs_to :exam_group
   belongs_to :subject
   belongs_to :event
   has_many :exam_scores, dependent: :destroy
-
+  
   validates :maximum_marks, numericality: { only_integer: true }, length: \
             { minimum: 1, maximum: 3 }, allow_blank: true
 
   validates :minimum_marks, numericality: { only_integer: true }, length: \
             { minimum: 1, maximum: 3 }, allow_blank: true
 
-  # validate :end_time_cannot_be_less_than_start_time
-  # validate :start_time_cannot_be_less_than_past
-  # validate :end_time_cannot_be_less_than_past
-  # validate :max_marks_greater_than_min_marks
+  validate :end_time_cannot_be_less_than_start_time
+  validate :start_time_cannot_be_less_than_past
+  validate :end_time_cannot_be_less_than_past
+  validate :max_marks_greater_than_min_marks
   scope :shod, ->(id) { where(id: id).take }
   scope :result, ->(s, e) { where(subject_id: s, exam_group_id: e).take }
 
+  # this is for validation of exam, exam start time can not be greater than exam
+  # exam end time
   def end_time_cannot_be_less_than_start_time
     if end_time.present? && end_time < start_time
       errors.add(:end_time, 'cannot be less than start time')
     end
   end
-
+  
+  # this is for validation of exam,exam start date
+  # should not be less than current date that is todays date
   def start_time_cannot_be_less_than_past
     if start_time.present? && start_time.to_date < Date.today
       errors.add(:start_time, 'should not be past date')
     end
   end
-
+  
+  # this is for validation of exam, exam end date
+  # should not be less than current date that is todays date
   def end_time_cannot_be_less_than_past
     if end_time.present? && end_time.to_date < Date.today
       errors.add(:end_time, 'should not be past date')
     end
   end
-
+  
+  # rhis is for validation of exam, maximum marks should
+  # not be greater than minimum marks
   def max_marks_greater_than_min_marks
     if maximum_marks.present? && minimum_marks.present? && maximum_marks < minimum_marks
       errors.add(:maximum_marks, 'should be greater than minimum marks')
     end
   end
 
+  
   def create_exam_event
     batch = exam_group.batch
     @event = event
@@ -57,6 +66,8 @@ class Exam < ActiveRecord::Base
     end
   end
 
+  # This action select the  subject for exam.
+  # This action is also check the subject is either elective or not.
   def select_subject(s1, s2, exam)
     unless s2.nil?
       s2.each do |std|
@@ -72,6 +83,8 @@ class Exam < ActiveRecord::Base
     s1
   end
 
+  # This action is update the exam score. This action also magage the
+  # updation of exam score according to marks, grade, marks and grade.
   def score_exam(temps, batch, exam, exam_group, grades)
     temps.each_pair do |student_id, details|
       @exam_score = ExamScore.where(exam_id: exam.id,
@@ -123,6 +136,9 @@ class Exam < ActiveRecord::Base
     end
   end
 
+  # This action is useful to update the exam score. But the score strategy is
+  # divided into the three parts i.e. marks,grades,marks and grades so to 
+  # manage update operation on exam score is also divided as per score strategy
   def update_exam_scr(exam, exam_group, batch, param)
     param.each_pair do |student_id, details|
       exam_score = ExamScore.exrep(exam, student_id)
@@ -158,18 +174,22 @@ class Exam < ActiveRecord::Base
     end
   end
 
+  # This action fetch the student recored which is failed.
   def is_failed
     exam_scores.where(is_failed: true).includes(:student, :grading_level)
   end
 
+  # This action find out the score of user selected student.
   def scores(student)
     ExamScore.score(student.id, id) unless student.nil?
   end
 
+  # This action perform the arithmetic operation for calculate total marks.
   def exam_total(total)
     total.to_f + maximum_marks.to_f
   end
 
+  # This action generate the data for marks of particular student.
   def exam_mar(student, marks)
     exam_score = scores(student)
     marks.to_f + exam_score.marks.to_f

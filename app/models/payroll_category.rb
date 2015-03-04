@@ -1,3 +1,4 @@
+# PayrollCategory model
 class PayrollCategory < ActiveRecord::Base
   include Activity
   has_many :employee_salery_structures
@@ -7,10 +8,12 @@ class PayrollCategory < ActiveRecord::Base
   scope :not_deduction, -> { where(is_deduction: false).order(:name) }
   scope :shod, ->(id) { where(id: id).take }
 
+  # update status of payroll category
   def active
     update(status: false)
   end
 
+   # update status of payroll category
   def inactive
     update(status: true)
   end

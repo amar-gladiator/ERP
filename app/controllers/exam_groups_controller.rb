@@ -87,41 +87,55 @@ class ExamGroupsController < ApplicationController
     @course = @exam_group.batch.course
   end
 
+  # This action provide @batches object for generate the drop down list data
+  # for selected course.
   def previous_exam
     @course = Course.shod(params[:course][:id])
     @batches = @course.batches.all
   end
 
+  # This action provide @course object for generate the drop down list.
   def previous_exam_data
     @courses ||= Course.all
   end
 
+  # @batch object store the selected batch id by user.
+  # Fetch the exam group record for selected batch with only result published.
   def previous_exam_group
     @batch = Batch.shod(params[:batch][:id])
     @exam_groups = @batch.exam_groups.where(result_published: true)
   end
 
+  # @exam_group object store the exam group id of user selected record.
+  # @exams array store the previous exam details.
   def previous_exam_details
     @exams = []
     @exam_group = ExamGroup.shod(params[:exam_group][:id])
     @exams = @exam_group.exam_details(@exam_group)
   end
 
+  # Store the user selected batch details in @batch object.
+  # Fetch the exam group details for the selected batch in @exam_groups.
   def connect_exam
     @batch = Batch.shod(params[:format])
     @exam_groups = @batch.exam_groups.all
   end
 
+  # This action provide the exam groups record for selected batch
+  # assign all operation.
   def assign_all
     @batch = Batch.shod(params[:id])
     @exam_groups = @batch.exam_groups.all
   end
 
+  # This action provide the exam groups record for selected batch
+  # for remove all operation.
   def remove_all
     @batch = Batch.shod(params[:id])
     @exam_groups = @batch.exam_groups.all
   end
 
+  # This action change the status of exam group record for published.
   def publish_exam
     @date = Date.today
     @exam_group = ExamGroup.shod(params[:format])
@@ -131,6 +145,8 @@ class ExamGroupsController < ApplicationController
     @exam_groups ||= @batch.exam_groups.all
   end
 
+  # This action update the exam group record.
+  # When exam result is published then its update the record.
   def publish_result
     @exam_group = ExamGroup.shod(params[:format])
     if @exam_group.is_published?
@@ -142,6 +158,8 @@ class ExamGroupsController < ApplicationController
     redirect_to exams_exam_group_path(@exam_group)
   end
 
+  # This action is subpart of the publish_action.
+  # It displays the flash message and update the record.
   def publish_res(flag)
     if flag == true
       flash[:alert] = 'Exam results cannot be published'
@@ -151,6 +169,8 @@ class ExamGroupsController < ApplicationController
     end
   end
 
+  # This action is used to delete the selected exam group record
+  # using destroy method.
   def destroy
     @exam_group = ExamGroup.shod(params[:id])
     authorize! :delete, @exam_group
@@ -160,12 +180,15 @@ class ExamGroupsController < ApplicationController
     redirect_to exam_group_path(batch)
   end
 
+  # This action display the previous exam scores of failed student.
   def previous_exam_scores
     @exam = Exam.shod(params[:format])
     @exam_scores = @exam.is_failed
     # authroize! :update, @exam
   end
 
+  # This action is update the exam score using update method for
+  # selected exam.
   def update_exam_score
     @exam = Exam.shod(params[:id])
     @exam_group = @exam.exam_group
